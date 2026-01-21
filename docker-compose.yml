@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+      - agent
+    environment:
+      - REACT_APP_API_URL=http://backend:8000
+      - REACT_APP_AGENT_URL=ws://localhost:8765
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - sqlite_data:/app/data
+    depends_on:
+      - agent
+
+  agent:
+    build:
+      context: ./agent
+      dockerfile: Dockerfile
+    ports:
+      - "8765:8765"
+      - "5000:5000"
+    volumes:
+      - agent_data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+
+volumes:
+  sqlite_data:
+  agent_data:
