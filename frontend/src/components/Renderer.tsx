@@ -1,0 +1,443 @@
+import React, { CSSProperties, useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { applyStyle, StyleData } from "../utils/applyStyle";
+import { TableComponent } from "./table/TableComponent";
+import { AgentComponent } from "./AgentComponent";
+import { MethodButton } from "./MethodButton";
+import "./table/TableComponent.css";
+
+export interface RendererProps {
+  component: any;
+  styles: StyleData[];
+}
+
+export const Renderer: React.FC<RendererProps> = ({ component, styles }) => {
+  // BrowserRouter should be set up in index.tsx - hooks must be called unconditionally
+  const navigate = useNavigate();
+  
+  // All hooks must be at the top level - declare all states here
+  const [chartData, setChartData] = useState<any[]>(component.data ?? []);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [listData, setListData] = useState<any[]>([]);
+  
+  let style = applyStyle(`#${component.id}`, styles) as CSSProperties;
+  if (component.class_list && Array.isArray(component.class_list)) {
+    component.class_list.forEach((cls: string) => {
+      // Ensure class selectors have the . prefix for proper CSS matching
+      const classSelector = cls.startsWith('.') ? cls : `.${cls}`;
+      style = { ...style, ...applyStyle(classSelector, styles) };
+    });
+  }
+
+  // Chart and metric card data fetching effect
+  useEffect(() => {
+    if (["bar-chart", "line-chart", "pie-chart", "radial-bar-chart", "radar-chart", "metric-card", "table"].includes(component.type)) {
+      const endpoint = component.data_binding?.endpoint;
+      if (endpoint) {
+        setLoading(true);
+        setError(null);
+        // Always use backend base URL for relative endpoints
+        const backendBase = process.env.REACT_APP_API_URL || "http://localhost:8000";
+        
+        // Check if table has lookup columns - if so, request detailed data with joins
+        const hasLookupColumns = component.chart?.columns?.some(
+          (col: any) => typeof col === 'object' && col.column_type === 'lookup'
+        );
+        
+        // Add detailed=true query param if there are lookup columns
+        const urlParams = hasLookupColumns ? '?detailed=true' : '';
+        const url = endpoint.startsWith("/") 
+          ? backendBase + endpoint + urlParams
+          : endpoint + urlParams;
+        
+        axios.get(url)
+          .then((res) => {
+            let data: any[] = [];
+            
+            // If response is already an array, use it directly
+            if (Array.isArray(res.data)) {
+              data = res.data;
+            } 
+            // If response is an object, try to find the first array property
+            else if (res.data && typeof res.data === 'object') {
+              // Look for common array property names first
+              const commonArrayKeys = ['data', 'results', 'items', 'records', 'list'];
+              let foundKey = commonArrayKeys.find(key => Array.isArray(res.data[key]));
+              
+              // If not found, search for any array property
+              if (!foundKey) {
+                foundKey = Object.keys(res.data).find(key => Array.isArray(res.data[key]));
+              }
+              
+              if (foundKey) {
+                data = res.data[foundKey];
+                console.log(`[Chart Data] Found array in property: ${foundKey}`);
+              }
+            }
+            
+            setChartData(data);
+          })
+          .catch((err) => {
+            console.error("[Chart Data] Error loading data:", err);
+            setError("Error loading data");
+            setChartData([]);
+          })
+          .finally(() => setLoading(false));
+      }
+    }
+  }, [component.type, component.data_binding?.endpoint]);
+
+  // Data list fetching effect
+  useEffect(() => {
+    if (component.type === "data-list" && component.data_sources && component.data_sources.length > 0) {
+      const source = component.data_sources[0];
+      const endpoint = source.endpoint || `/${source.domain?.toLowerCase()}/`;
+      if (endpoint) {
+        const backendBase = process.env.REACT_APP_API_URL || "http://localhost:8000";
+        const url = endpoint.startsWith("/") ? backendBase + endpoint : endpoint;
+        axios.get(url)
+          .then((res) => {
+            let data = Array.isArray(res.data) ? res.data : (res.data.results || []);
+            setListData(data);
+          })
+          .catch(() => setListData([]));
+      }
+    }
+  }, [component.type, component.data_sources]);
+
+  if (component.type === "container" || component.type === "wrapper" || component.type === "component") {
+    // Use the actual HTML tag if available, otherwise default to div
+    const validTags = ["section", "article", "header", "footer", "nav", "aside", "main", "div", "ul", "ol", "li"];
+    const tagName = (component.tag && validTags.includes(component.tag.toLowerCase())) 
+      ? component.tag.toLowerCase()
+      : "div";
+    
+    // Check if this is a cell and has children
+    const isCell = component.class_list?.includes('gjs-cell');
+    const hasChildren = (component.children ?? []).length > 0;
+    
+    // If it's a cell with children, set height to auto
+    const adjustedStyle = isCell && hasChildren
+      ? { ...style, height: 'auto' }
+      : style;
+
+    // Filter out 'style' from attributes since we handle it separately as a React object
+    const { style: _, ...safeAttributes } = component.attributes || {};
+
+    return React.createElement(
+      tagName,
+      {
+        id: component.id,
+        style: adjustedStyle,
+        className: component.class_list?.join(' '),
+        ...safeAttributes
+      },
+      (component.children ?? []).map((child: any) => (
+        <Renderer key={child.id} component={child} styles={styles} />
+      ))
+    );
+  }
+
+  if (component.type === "text") {
+    // Use the actual HTML tag if available, otherwise default to p
+    const validTags = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "span", "div", "strong", "em", "li"];
+    const tagName = (component.tag && validTags.includes(component.tag.toLowerCase())) 
+      ? component.tag.toLowerCase()
+      : "p";
+    
+    // Filter out 'style' from attributes since we handle it separately as a React object
+    const { style: _, ...safeAttributes } = component.attributes || {};
+    
+    return React.createElement(
+      tagName,
+      {
+        id: component.id,
+        style: style,
+        className: component.class_list?.join(' '),
+        ...safeAttributes
+      },
+      component.content || ""
+    );
+  }
+
+  if (component.type === "button" || component.type === "action-button") {
+    // Check if this is a method button (from JSON attributes)
+    const actionType = component.attributes?.["data-action-type"] || component.action_type;
+    
+    if (actionType === "run-method") {
+      const isInstanceMethod = component.attributes?.["is-instance-method"] === "true" || component.attributes?.["is-instance-method"] === true;
+      const instanceSource = component.attributes?.["instance-source"];
+      const endpoint = component.attributes?.endpoint || "";
+      const inputParameters = component.attributes?.["input-parameters"] || {};
+      
+      // Convert input parameters from JSON format to MethodParameter array
+      const parameters = Object.entries(inputParameters).map(([name, type]) => ({
+        name,
+        type: String(type),
+        required: true,
+      }));
+      
+      return (
+        <MethodButton
+          endpoint={endpoint}
+          label={component.attributes?.["button-label"] || component.label || component.name || "Execute"}
+          parameters={parameters}
+          isInstanceMethod={isInstanceMethod}
+          instanceSourceTableId={instanceSource}
+          className={component.class_list?.join(' ')}
+          style={style}
+          backendUrl={process.env.REACT_APP_API_URL || "http://localhost:8000"}
+        />
+      );
+    }
+    
+    // Check if this is a method button (legacy method_config)
+    if (component.method_config) {
+      const methodConfig = component.method_config;
+      return (
+        <MethodButton
+          entityType={methodConfig.entity_type}
+          entityId={methodConfig.entity_id}
+          methodName={methodConfig.method_name}
+          label={component.label || component.name || methodConfig.method_name}
+          parameters={methodConfig.parameters || []}
+          isClassMethod={methodConfig.is_class_method || false}
+          className={component.class_list?.join(' ')}
+          style={style}
+          backendUrl={process.env.REACT_APP_API_URL || "http://localhost:8000"}
+        />
+      );
+    }
+
+    const handleClick = () => {
+      // Handle button events
+      if (component.events && Array.isArray(component.events)) {
+        component.events.forEach((event: any) => {
+          if (event.type === "onClick" && event.actions) {
+            event.actions.forEach((action: any) => {
+              if (action.kind === "Transition" && action.target_screen_path) {
+                navigate(action.target_screen_path);
+              } else if (action.kind === "Transition" && action.target_screen) {
+                // Fallback to target screen name if path not available
+                const targetPath = `/${action.target_screen.toLowerCase().replace(/\s+/g, '-')}`;
+                navigate(targetPath);
+              }
+            });
+          }
+        });
+      }
+      // Fallback to targetScreen if events not available
+      else if (component.target_screen_path) {
+        navigate(component.target_screen_path);
+      }
+    };
+    
+    // Filter out 'style' from attributes
+    const { style: _, ...safeAttributes } = component.attributes || {};
+    
+    return (
+      <button
+        id={component.id}
+        type={component.attributes?.type || "button"}
+        style={style}
+        className={component.class_list?.join(' ')}
+        onClick={handleClick}
+        {...safeAttributes}
+      >
+        {component.label || component.name || "Button"}
+      </button>
+    );
+  }
+
+  if (component.type === "link" || component.type === "link-button") {
+    const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+      // Handle internal navigation
+      if (component.target_screen_path && !component.url?.startsWith('http') && component.url !== '#') {
+        e.preventDefault();
+        navigate(component.target_screen_path);
+      }
+      // Let default link behavior handle external URLs
+    };
+    
+    // Filter out 'style' from attributes
+    const { style: _, ...safeAttributes } = component.attributes || {};
+    
+    return (
+      <a
+        id={component.id}
+        href={component.url || "#"}
+        target={component.target || undefined}
+        rel={component.rel || undefined}
+        style={style}
+        className={component.class_list?.join(' ')}
+        onClick={handleClick}
+        {...safeAttributes}
+      >
+        {component.label || component.name || ""}
+      </a>
+    );
+  }
+
+  if (component.type === "image") {
+    // Filter out 'style' from attributes
+    const { style: _, ...safeAttributes } = component.attributes || {};
+    
+    return (
+      <img
+        id={component.id}
+        src={component.src || ""}
+        alt={component.alt || component.description || ""}
+        style={style}
+        className={component.class_list?.join(' ')}
+        {...safeAttributes}
+      />
+    );
+  }
+
+  if (component.type === "input") {
+    // Filter out 'style' from attributes
+    const { style: _, ...safeAttributes } = component.attributes || {};
+    
+    return (
+      <input
+        id={component.id}
+        type={component.input_type?.toLowerCase() || "text"}
+        placeholder={component.attributes?.placeholder || ""}
+        style={style}
+        className={component.class_list?.join(' ')}
+        {...safeAttributes}
+      />
+    );
+  }
+
+  if (component.type === "form") {
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      // Handle form submission
+      console.log("Form submitted:", component.name);
+    };
+    
+    // Filter out 'style' from attributes
+    const { style: _, ...safeAttributes } = component.attributes || {};
+    
+    return (
+      <form
+        id={component.id}
+        onSubmit={handleSubmit}
+        style={style}
+        className={component.class_list?.join(' ')}
+        {...safeAttributes}
+      >
+        {(component.inputs || []).map((input: any) => (
+          <div key={input.id} style={{ marginBottom: "10px" }}>
+            <label htmlFor={input.id} style={{ display: "block", marginBottom: "5px" }}>
+              {input.label || input.id}
+            </label>
+            <Renderer key={input.id} component={{ ...input, type: "input" }} styles={styles} />
+          </div>
+        ))}
+        <button type="submit">Submit</button>
+      </form>
+    );
+  }
+
+  if (component.type === "menu") {
+    // Filter out 'style' from attributes
+    const { style: _, ...safeAttributes } = component.attributes || {};
+    
+    return (
+      <nav id={component.id} style={style} className={component.class_list?.join(' ')} {...safeAttributes}>
+        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+          {(component.items || []).map((item: any, index: number) => (
+            <li key={index} style={{ display: "inline-block", marginRight: "15px" }}>
+              <a
+                href={item.url || "#"}
+                target={item.target || undefined}
+                rel={item.rel || undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    );
+  }
+
+  if (component.type === "data-list") {
+    // Filter out 'style' from attributes
+    const { style: _, ...safeAttributes } = component.attributes || {};
+    
+    return (
+      <div id={component.id} style={style} className={component.class_list?.join(' ')} {...safeAttributes}>
+        <ul>
+          {listData.map((item: any, index: number) => (
+            <li key={index}>{JSON.stringify(item)}</li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
+  if (component.type === "embedded-content") {
+    // Filter out 'style' from attributes
+    const { style: _, ...safeAttributes } = component.attributes || {};
+    
+    return (
+      <iframe
+        id={component.id}
+        src={component.src || ""}
+        title={component.description || component.name}
+        style={style}
+        className={component.class_list?.join(' ')}
+        {...safeAttributes}
+      />
+    );
+  }
+
+
+
+
+
+  if (component.type === "table") {
+    if (loading) return <div id={component.id}>Loading data...</div>;
+    if (error) return <div id={component.id}>{error}</div>;
+    // Merge action-buttons from attributes into options
+    const options = {
+      ...(component.chart || {}),
+      actionButtons: component.attributes?.["action-buttons"] ?? false,
+    };
+    return (
+      <TableComponent
+        id={component.id}
+        title={component.title || component.name}
+        data={chartData}
+        options={options}
+        styles={style}
+        dataBinding={component.data_binding}
+      />
+    );
+  }
+
+  if (component.type === "agent-component") {
+    return (
+      <AgentComponent
+        id={component.id}
+        agent-name={component["agent-name"] || component.agent_name || ""}
+        agent-title={component["agent-title"] || component.agent_title || "BESSER Agent"}
+        styles={style}
+      />
+    );
+  }
+
+  return (
+    <div id={component.id} style={style}>
+      <strong>{component.name || component.type}</strong>
+      <pre style={{ whiteSpace: "pre-wrap" }}>
+        {JSON.stringify(component, null, 2)}
+      </pre>
+    </div>
+  );
+};
