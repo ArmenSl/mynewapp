@@ -1,0 +1,680 @@
+{
+  "pages": [
+    {
+      "components": [
+        {
+          "attributes": {
+            "id": "istt7"
+          },
+          "children": [
+            {
+              "attributes": {
+                "id": "i3gsv"
+              },
+              "children": [
+                {
+                  "attributes": {
+                    "id": "it32q"
+                  },
+                  "content": "BESSER",
+                  "description": "Text element",
+                  "display_order": 0,
+                  "id": "it32q",
+                  "name": "BESSER",
+                  "tag": "h2",
+                  "type": "text"
+                },
+                {
+                  "attributes": {
+                    "id": "ifws4"
+                  },
+                  "children": [
+                    {
+                      "attributes": {
+                        "href": "/book",
+                        "id": "i4rsy"
+                      },
+                      "description": "Link element",
+                      "display_order": 0,
+                      "id": "i4rsy",
+                      "label": "Book",
+                      "name": "i4rsy",
+                      "tag": "a",
+                      "type": "link",
+                      "url": "/book"
+                    },
+                    {
+                      "attributes": {
+                        "href": "/library",
+                        "id": "iqbmb"
+                      },
+                      "description": "Link element",
+                      "display_order": 1,
+                      "id": "iqbmb",
+                      "label": "Library",
+                      "name": "iqbmb",
+                      "tag": "a",
+                      "type": "link",
+                      "url": "/library"
+                    },
+                    {
+                      "attributes": {
+                        "href": "/author",
+                        "id": "ihyel"
+                      },
+                      "description": "Link element",
+                      "display_order": 2,
+                      "id": "ihyel",
+                      "label": "Author",
+                      "name": "ihyel",
+                      "tag": "a",
+                      "type": "link",
+                      "url": "/author"
+                    }
+                  ],
+                  "description": " component",
+                  "display_order": 1,
+                  "id": "ifws4",
+                  "name": "ifws4",
+                  "type": "container"
+                },
+                {
+                  "attributes": {
+                    "id": "iw4qg"
+                  },
+                  "content": "© 2025 BESSER. All rights reserved.",
+                  "description": "Text element",
+                  "display_order": 2,
+                  "id": "iw4qg",
+                  "name": "© 2025 BESSER. All rights reserved.",
+                  "type": "text"
+                }
+              ],
+              "description": "nav container",
+              "display_order": 0,
+              "id": "i3gsv",
+              "name": "i3gsv",
+              "tag": "nav",
+              "type": "container"
+            },
+            {
+              "attributes": {
+                "id": "innsi"
+              },
+              "children": [
+                {
+                  "attributes": {
+                    "id": "i5z39"
+                  },
+                  "content": "Book",
+                  "description": "Text element",
+                  "display_order": 0,
+                  "id": "i5z39",
+                  "name": "Book",
+                  "tag": "h1",
+                  "type": "text"
+                },
+                {
+                  "attributes": {
+                    "id": "iv36n"
+                  },
+                  "content": "Manage Book data",
+                  "description": "Text element",
+                  "display_order": 1,
+                  "id": "iv36n",
+                  "name": "Manage Book data",
+                  "tag": "p",
+                  "type": "text"
+                },
+                {
+                  "attributes": {
+                    "action-buttons": "true",
+                    "chart-color": "#2c3e50",
+                    "chart-title": "Book List",
+                    "data-source": "class_oho5ergc3_mjikkmod",
+                    "filter": "",
+                    "id": "table-book-0",
+                    "rows-per-page": "5",
+                    "show-header": "true",
+                    "show-pagination": "true",
+                    "striped-rows": "false"
+                  },
+                  "chart": {
+                    "actionButtons": true,
+                    "columns": [
+                      {
+                        "column_type": "field",
+                        "field": "title",
+                        "label": "Title",
+                        "required": true,
+                        "type": "str"
+                      },
+                      {
+                        "column_type": "field",
+                        "field": "pages",
+                        "label": "Pages",
+                        "required": true,
+                        "type": "int"
+                      },
+                      {
+                        "column_type": "field",
+                        "field": "stock",
+                        "label": "Stock",
+                        "required": true,
+                        "type": "int"
+                      },
+                      {
+                        "column_type": "field",
+                        "field": "price",
+                        "label": "Price",
+                        "required": true,
+                        "type": "float"
+                      },
+                      {
+                        "column_type": "field",
+                        "field": "release",
+                        "label": "Release",
+                        "required": true,
+                        "type": "date"
+                      },
+                      {
+                        "column_type": "field",
+                        "field": "time",
+                        "label": "Time",
+                        "required": true,
+                        "type": "time"
+                      },
+                      {
+                        "column_type": "lookup",
+                        "entity": "Library",
+                        "field": "name",
+                        "label": "Library",
+                        "path": "library",
+                        "required": false,
+                        "type": "list"
+                      },
+                      {
+                        "column_type": "lookup",
+                        "entity": "Author",
+                        "field": "name",
+                        "label": "Authors",
+                        "path": "authors",
+                        "required": false,
+                        "type": "list"
+                      }
+                    ],
+                    "rowsPerPage": 5,
+                    "showHeader": true,
+                    "showPagination": true,
+                    "stripedRows": false
+                  },
+                  "color": "#2c3e50",
+                  "data_binding": {
+                    "endpoint": "/book/",
+                    "entity": "Book"
+                  },
+                  "display_order": 2,
+                  "id": "table-book-0",
+                  "name": "Book List",
+                  "title": "Book List",
+                  "type": "table"
+                },
+                {
+                  "attributes": {
+                    "id": "ikvsg"
+                  },
+                  "children": [
+                    {
+                      "action_type": "run-method",
+                      "attributes": {
+                        "data-action-type": "run-method",
+                        "data-button-label": "+ decrease_stock",
+                        "data-instance-source": "table-book-0",
+                        "data-method": "method_rb01uirsh_mjikkmod",
+                        "endpoint": "/book/{book_id}/methods/decrease_stock/",
+                        "id": "ii4vx",
+                        "input-parameters": {
+                          "qty": "int"
+                        },
+                        "instance-source": "table-book-0",
+                        "is-instance-method": "true",
+                        "method-class": "Book",
+                        "type": "button"
+                      },
+                      "button_type": "Customizable Button",
+                      "class_list": [
+                        "action-button-component"
+                      ],
+                      "description": "Button component",
+                      "display_order": 0,
+                      "id": "ii4vx",
+                      "label": "+ decrease_stock",
+                      "name": "ii4vx",
+                      "tag": "button",
+                      "type": "button"
+                    }
+                  ],
+                  "description": " component",
+                  "display_order": 3,
+                  "id": "ikvsg",
+                  "name": "ikvsg",
+                  "type": "container"
+                }
+              ],
+              "description": "main container",
+              "display_order": 1,
+              "id": "innsi",
+              "name": "innsi",
+              "tag": "main",
+              "type": "container"
+            }
+          ],
+          "description": " component",
+          "display_order": 0,
+          "id": "istt7",
+          "name": "istt7",
+          "type": "container"
+        }
+      ],
+      "description": "Book",
+      "id": "page-book-0",
+      "is_main": true,
+      "name": "Book",
+      "route_path": "/book"
+    },
+    {
+      "components": [
+        {
+          "attributes": {
+            "id": "i7urf"
+          },
+          "children": [
+            {
+              "attributes": {
+                "id": "irz1y"
+              },
+              "children": [
+                {
+                  "attributes": {
+                    "id": "ix7jj"
+                  },
+                  "content": "BESSER",
+                  "description": "Text element",
+                  "display_order": 0,
+                  "id": "ix7jj",
+                  "name": "BESSER",
+                  "tag": "h2",
+                  "type": "text"
+                },
+                {
+                  "attributes": {
+                    "id": "id7s8"
+                  },
+                  "children": [
+                    {
+                      "attributes": {
+                        "href": "/book",
+                        "id": "i4vef"
+                      },
+                      "description": "Link element",
+                      "display_order": 0,
+                      "id": "i4vef",
+                      "label": "Book",
+                      "name": "i4vef",
+                      "tag": "a",
+                      "type": "link",
+                      "url": "/book"
+                    },
+                    {
+                      "attributes": {
+                        "href": "/library",
+                        "id": "ioxg2"
+                      },
+                      "description": "Link element",
+                      "display_order": 1,
+                      "id": "ioxg2",
+                      "label": "Library",
+                      "name": "ioxg2",
+                      "tag": "a",
+                      "type": "link",
+                      "url": "/library"
+                    },
+                    {
+                      "attributes": {
+                        "href": "/author",
+                        "id": "itcrh"
+                      },
+                      "description": "Link element",
+                      "display_order": 2,
+                      "id": "itcrh",
+                      "label": "Author",
+                      "name": "itcrh",
+                      "tag": "a",
+                      "type": "link",
+                      "url": "/author"
+                    }
+                  ],
+                  "description": " component",
+                  "display_order": 1,
+                  "id": "id7s8",
+                  "name": "id7s8",
+                  "type": "container"
+                },
+                {
+                  "attributes": {
+                    "id": "iqzjr"
+                  },
+                  "content": "© 2025 BESSER. All rights reserved.",
+                  "description": "Text element",
+                  "display_order": 2,
+                  "id": "iqzjr",
+                  "name": "© 2025 BESSER. All rights reserved.",
+                  "type": "text"
+                }
+              ],
+              "description": "nav container",
+              "display_order": 0,
+              "id": "irz1y",
+              "name": "irz1y",
+              "tag": "nav",
+              "type": "container"
+            },
+            {
+              "attributes": {
+                "id": "id9fb"
+              },
+              "children": [
+                {
+                  "attributes": {
+                    "id": "i1vjy"
+                  },
+                  "content": "Library",
+                  "description": "Text element",
+                  "display_order": 0,
+                  "id": "i1vjy",
+                  "name": "Library",
+                  "tag": "h1",
+                  "type": "text"
+                },
+                {
+                  "attributes": {
+                    "id": "iy5o1"
+                  },
+                  "content": "Manage Library data",
+                  "description": "Text element",
+                  "display_order": 1,
+                  "id": "iy5o1",
+                  "name": "Manage Library data",
+                  "tag": "p",
+                  "type": "text"
+                },
+                {
+                  "attributes": {
+                    "action-buttons": "true",
+                    "chart-color": "#2c3e50",
+                    "chart-title": "Library List",
+                    "data-source": "class_06blhjj3h_mjikkmod",
+                    "filter": "",
+                    "id": "table-library-1",
+                    "rows-per-page": "5",
+                    "show-header": "true",
+                    "show-pagination": "true",
+                    "striped-rows": "false"
+                  },
+                  "chart": {
+                    "actionButtons": true,
+                    "columns": [
+                      {
+                        "column_type": "field",
+                        "field": "name",
+                        "label": "Name",
+                        "required": true,
+                        "type": "str"
+                      },
+                      {
+                        "column_type": "lookup",
+                        "entity": "Book",
+                        "field": "title",
+                        "label": "Books",
+                        "path": "books",
+                        "required": false,
+                        "type": "list"
+                      }
+                    ],
+                    "rowsPerPage": 5,
+                    "showHeader": true,
+                    "showPagination": true,
+                    "stripedRows": false
+                  },
+                  "color": "#2c3e50",
+                  "data_binding": {
+                    "endpoint": "/library/",
+                    "entity": "Library"
+                  },
+                  "display_order": 2,
+                  "id": "table-library-1",
+                  "name": "Library List",
+                  "title": "Library List",
+                  "type": "table"
+                }
+              ],
+              "description": "main container",
+              "display_order": 1,
+              "id": "id9fb",
+              "name": "id9fb",
+              "tag": "main",
+              "type": "container"
+            }
+          ],
+          "description": " component",
+          "display_order": 0,
+          "id": "i7urf",
+          "name": "i7urf",
+          "type": "container"
+        }
+      ],
+      "description": "Library",
+      "id": "page-library-1",
+      "is_main": false,
+      "name": "Library",
+      "route_path": "/library"
+    },
+    {
+      "components": [
+        {
+          "attributes": {
+            "id": "i4th6"
+          },
+          "children": [
+            {
+              "attributes": {
+                "id": "imwrn"
+              },
+              "children": [
+                {
+                  "attributes": {
+                    "id": "i93y2"
+                  },
+                  "content": "BESSER",
+                  "description": "Text element",
+                  "display_order": 0,
+                  "id": "i93y2",
+                  "name": "BESSER",
+                  "tag": "h2",
+                  "type": "text"
+                },
+                {
+                  "attributes": {
+                    "id": "iy3vk"
+                  },
+                  "children": [
+                    {
+                      "attributes": {
+                        "href": "/book",
+                        "id": "ic8i6"
+                      },
+                      "description": "Link element",
+                      "display_order": 0,
+                      "id": "ic8i6",
+                      "label": "Book",
+                      "name": "ic8i6",
+                      "tag": "a",
+                      "type": "link",
+                      "url": "/book"
+                    },
+                    {
+                      "attributes": {
+                        "href": "/library",
+                        "id": "ig3ls"
+                      },
+                      "description": "Link element",
+                      "display_order": 1,
+                      "id": "ig3ls",
+                      "label": "Library",
+                      "name": "ig3ls",
+                      "tag": "a",
+                      "type": "link",
+                      "url": "/library"
+                    },
+                    {
+                      "attributes": {
+                        "href": "/author",
+                        "id": "i5nkn"
+                      },
+                      "description": "Link element",
+                      "display_order": 2,
+                      "id": "i5nkn",
+                      "label": "Author",
+                      "name": "i5nkn",
+                      "tag": "a",
+                      "type": "link",
+                      "url": "/author"
+                    }
+                  ],
+                  "description": " component",
+                  "display_order": 1,
+                  "id": "iy3vk",
+                  "name": "iy3vk",
+                  "type": "container"
+                },
+                {
+                  "attributes": {
+                    "id": "iuvmm"
+                  },
+                  "content": "© 2025 BESSER. All rights reserved.",
+                  "description": "Text element",
+                  "display_order": 2,
+                  "id": "iuvmm",
+                  "name": "© 2025 BESSER. All rights reserved.",
+                  "type": "text"
+                }
+              ],
+              "description": "nav container",
+              "display_order": 0,
+              "id": "imwrn",
+              "name": "imwrn",
+              "tag": "nav",
+              "type": "container"
+            },
+            {
+              "attributes": {
+                "id": "isjxb"
+              },
+              "children": [
+                {
+                  "attributes": {
+                    "id": "ifeof"
+                  },
+                  "content": "Author",
+                  "description": "Text element",
+                  "display_order": 0,
+                  "id": "ifeof",
+                  "name": "Author",
+                  "tag": "h1",
+                  "type": "text"
+                },
+                {
+                  "attributes": {
+                    "id": "ibkkt"
+                  },
+                  "content": "Manage Author data",
+                  "description": "Text element",
+                  "display_order": 1,
+                  "id": "ibkkt",
+                  "name": "Manage Author data",
+                  "tag": "p",
+                  "type": "text"
+                },
+                {
+                  "attributes": {
+                    "action-buttons": "true",
+                    "chart-color": "#2c3e50",
+                    "chart-title": "Author List",
+                    "data-source": "class_d3f0di6lb_mjikkmoe",
+                    "filter": "",
+                    "id": "table-author-2",
+                    "rows-per-page": "5",
+                    "show-header": "true",
+                    "show-pagination": "true",
+                    "striped-rows": "false"
+                  },
+                  "chart": {
+                    "actionButtons": true,
+                    "columns": [
+                      {
+                        "column_type": "field",
+                        "field": "name",
+                        "label": "Name",
+                        "required": true,
+                        "type": "str"
+                      },
+                      {
+                        "column_type": "lookup",
+                        "entity": "Book",
+                        "field": "title",
+                        "label": "Books",
+                        "path": "books",
+                        "required": true,
+                        "type": "list"
+                      }
+                    ],
+                    "rowsPerPage": 5,
+                    "showHeader": true,
+                    "showPagination": true,
+                    "stripedRows": false
+                  },
+                  "color": "#2c3e50",
+                  "data_binding": {
+                    "endpoint": "/author/",
+                    "entity": "Author"
+                  },
+                  "display_order": 2,
+                  "id": "table-author-2",
+                  "name": "Author List",
+                  "title": "Author List",
+                  "type": "table"
+                }
+              ],
+              "description": "main container",
+              "display_order": 1,
+              "id": "isjxb",
+              "name": "isjxb",
+              "tag": "main",
+              "type": "container"
+            }
+          ],
+          "description": " component",
+          "display_order": 0,
+          "id": "i4th6",
+          "name": "i4th6",
+          "type": "container"
+        }
+      ],
+      "description": "Author",
+      "id": "page-author-2",
+      "is_main": false,
+      "name": "Author",
+      "route_path": "/author"
+    }
+  ]
+}
